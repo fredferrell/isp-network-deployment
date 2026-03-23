@@ -1,0 +1,2165 @@
+annotations: []
+smart_annotations: []
+nodes:
+  - boot_disk_size: null
+    configuration:
+      - name: default
+        content: System Bridge
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n0
+    image_definition: null
+    label: ext-conn
+    node_definition: external_connector
+    parameters: {}
+    ram: null
+    tags: []
+    x: -900
+    y: 0
+    interfaces:
+      - id: i0
+        label: port
+        mac_address: null
+        type: physical
+        slot: 0
+  - boot_disk_size: null
+    configuration:
+      - name: ios_config.txt
+        content: |-
+          hostname isp-01
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.0.1 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet0/0
+           description BRIDGE-EXTERNAL-ACCESS
+           ip address 192.168.10.240 255.255.255.0
+           no shutdown
+          !
+          interface GigabitEthernet0/1
+           description TO-EDGE-01
+           ip address 203.0.113.1 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet0/2
+           description TO-EDGE-02
+           ip address 203.0.113.9 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2700.0001.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          ip route 0.0.0.0 0.0.0.0 192.168.10.1
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n1
+    image_definition: null
+    label: isp-01
+    node_definition: iosv
+    parameters: {}
+    ram: null
+    tags: []
+    x: -700
+    y: 0
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet0/0
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet0/1
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i3
+        label: GigabitEthernet0/2
+        mac_address: null
+        type: physical
+        slot: 2
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname edge-01
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.0.11 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-ISP-01
+           ip address 203.0.113.2 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-EDGE-02
+           ip address 100.126.1.33 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet3
+           description TO-CORE-01
+           ip address 100.126.1.1 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet4
+           description TO-CORE-02
+           ip address 100.126.1.9 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2700.0011.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.0.11
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n2
+    image_definition: null
+    label: edge-01
+    node_definition: csr1000v
+    parameters: {}
+    ram: null
+    tags: []
+    x: -500
+    y: -100
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i3
+        label: GigabitEthernet3
+        mac_address: null
+        type: physical
+        slot: 2
+      - id: i4
+        label: GigabitEthernet4
+        mac_address: null
+        type: physical
+        slot: 3
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname edge-02
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.0.12 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-ISP-01
+           ip address 203.0.113.10 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-EDGE-01
+           ip address 100.126.1.34 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet3
+           description TO-CORE-01
+           ip address 100.126.1.17 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet4
+           description TO-CORE-02
+           ip address 100.126.1.25 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2700.0012.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.0.12
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n3
+    image_definition: null
+    label: edge-02
+    node_definition: csr1000v
+    parameters: {}
+    ram: null
+    tags: []
+    x: -500
+    y: 100
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i3
+        label: GigabitEthernet3
+        mac_address: null
+        type: physical
+        slot: 2
+      - id: i4
+        label: GigabitEthernet4
+        mac_address: null
+        type: physical
+        slot: 3
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname core-01
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.1.1 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-EDGE-01
+           ip address 100.126.1.2 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-EDGE-02
+           ip address 100.126.1.18 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet3
+           description TO-CORE-02-ETHERCHANNEL
+           no ip address
+           no shutdown
+          !
+          interface Port-channel1
+           description L3-ETHERCHANNEL-TO-CORE-02
+           ip address 100.126.1.41 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+          !
+          event manager applet CONFIGURE-ETHERCHANNEL
+           event timer countdown time 60
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "interface GigabitEthernet3"
+           action 1.3 cli command "channel-group 1 mode active"
+           action 1.4 cli command "end"
+           action 1.5 cli command "no event manager applet CONFIGURE-ETHERCHANNEL"
+          !
+          interface GigabitEthernet4
+           description TO-AGG-01
+           ip address 100.126.1.49 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet5
+           description TO-AGG-02
+           ip address 100.126.1.57 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2700.1001.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.1.1
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           bgp cluster-id 1
+           neighbor EVPN-CLIENTS peer-group
+           neighbor EVPN-CLIENTS remote-as 4208675309
+           neighbor EVPN-CLIENTS update-source Loopback0
+           neighbor 100.127.1.2 remote-as 4208675309
+           neighbor 100.127.1.2 update-source Loopback0
+           neighbor 100.127.0.11 peer-group EVPN-CLIENTS
+           neighbor 100.127.0.12 peer-group EVPN-CLIENTS
+           neighbor 100.127.1.21 peer-group EVPN-CLIENTS
+           neighbor 100.127.1.22 peer-group EVPN-CLIENTS
+           neighbor 100.127.50.101 peer-group EVPN-CLIENTS
+           neighbor 100.127.50.102 peer-group EVPN-CLIENTS
+           neighbor 100.127.50.103 peer-group EVPN-CLIENTS
+           neighbor 100.127.52.101 peer-group EVPN-CLIENTS
+           neighbor 100.127.52.102 peer-group EVPN-CLIENTS
+           neighbor 100.127.52.103 peer-group EVPN-CLIENTS
+           neighbor 100.127.52.104 peer-group EVPN-CLIENTS
+           neighbor 100.127.51.1 peer-group EVPN-CLIENTS
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.2 activate
+            neighbor EVPN-CLIENTS route-reflector-client
+            neighbor 100.127.0.11 activate
+            neighbor 100.127.0.12 activate
+            neighbor 100.127.1.21 activate
+            neighbor 100.127.1.22 activate
+            neighbor 100.127.50.101 activate
+            neighbor 100.127.50.102 activate
+            neighbor 100.127.50.103 activate
+            neighbor 100.127.52.101 activate
+            neighbor 100.127.52.102 activate
+            neighbor 100.127.52.103 activate
+            neighbor 100.127.52.104 activate
+            neighbor 100.127.51.1 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.2 activate
+            neighbor EVPN-CLIENTS route-reflector-client
+            neighbor 100.127.0.11 activate
+            neighbor 100.127.0.12 activate
+            neighbor 100.127.1.21 activate
+            neighbor 100.127.1.22 activate
+            neighbor 100.127.50.101 activate
+            neighbor 100.127.50.102 activate
+            neighbor 100.127.50.103 activate
+            neighbor 100.127.52.101 activate
+            neighbor 100.127.52.102 activate
+            neighbor 100.127.52.103 activate
+            neighbor 100.127.52.104 activate
+            neighbor 100.127.51.1 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n4
+    image_definition: null
+    label: core-01
+    node_definition: csr1000v
+    parameters: {}
+    ram: null
+    tags: []
+    x: -200
+    y: -100
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i3
+        label: GigabitEthernet3
+        mac_address: null
+        type: physical
+        slot: 2
+      - id: i4
+        label: GigabitEthernet4
+        mac_address: null
+        type: physical
+        slot: 3
+      - id: i5
+        label: GigabitEthernet5
+        mac_address: null
+        type: physical
+        slot: 4
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname core-02
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.1.2 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-EDGE-01
+           ip address 100.126.1.10 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-EDGE-02
+           ip address 100.126.1.26 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet3
+           description TO-CORE-01-ETHERCHANNEL
+           no ip address
+           no shutdown
+          !
+          interface Port-channel1
+           description L3-ETHERCHANNEL-TO-CORE-01
+           ip address 100.126.1.42 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+          !
+          event manager applet CONFIGURE-ETHERCHANNEL
+           event timer countdown time 60
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "interface GigabitEthernet3"
+           action 1.3 cli command "channel-group 1 mode active"
+           action 1.4 cli command "end"
+           action 1.5 cli command "no event manager applet CONFIGURE-ETHERCHANNEL"
+          !
+          interface GigabitEthernet4
+           description TO-AGG-01
+           ip address 100.126.1.65 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet5
+           description TO-AGG-02
+           ip address 100.126.1.73 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2700.1002.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.1.2
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           bgp cluster-id 1
+           neighbor EVPN-CLIENTS peer-group
+           neighbor EVPN-CLIENTS remote-as 4208675309
+           neighbor EVPN-CLIENTS update-source Loopback0
+           neighbor 100.127.1.1 remote-as 4208675309
+           neighbor 100.127.1.1 update-source Loopback0
+           neighbor 100.127.0.11 peer-group EVPN-CLIENTS
+           neighbor 100.127.0.12 peer-group EVPN-CLIENTS
+           neighbor 100.127.1.21 peer-group EVPN-CLIENTS
+           neighbor 100.127.1.22 peer-group EVPN-CLIENTS
+           neighbor 100.127.50.101 peer-group EVPN-CLIENTS
+           neighbor 100.127.50.102 peer-group EVPN-CLIENTS
+           neighbor 100.127.50.103 peer-group EVPN-CLIENTS
+           neighbor 100.127.52.101 peer-group EVPN-CLIENTS
+           neighbor 100.127.52.102 peer-group EVPN-CLIENTS
+           neighbor 100.127.52.103 peer-group EVPN-CLIENTS
+           neighbor 100.127.52.104 peer-group EVPN-CLIENTS
+           neighbor 100.127.51.1 peer-group EVPN-CLIENTS
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor EVPN-CLIENTS route-reflector-client
+            neighbor 100.127.0.11 activate
+            neighbor 100.127.0.12 activate
+            neighbor 100.127.1.21 activate
+            neighbor 100.127.1.22 activate
+            neighbor 100.127.50.101 activate
+            neighbor 100.127.50.102 activate
+            neighbor 100.127.50.103 activate
+            neighbor 100.127.52.101 activate
+            neighbor 100.127.52.102 activate
+            neighbor 100.127.52.103 activate
+            neighbor 100.127.52.104 activate
+            neighbor 100.127.51.1 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor EVPN-CLIENTS route-reflector-client
+            neighbor 100.127.0.11 activate
+            neighbor 100.127.0.12 activate
+            neighbor 100.127.1.21 activate
+            neighbor 100.127.1.22 activate
+            neighbor 100.127.50.101 activate
+            neighbor 100.127.50.102 activate
+            neighbor 100.127.50.103 activate
+            neighbor 100.127.52.101 activate
+            neighbor 100.127.52.102 activate
+            neighbor 100.127.52.103 activate
+            neighbor 100.127.52.104 activate
+            neighbor 100.127.51.1 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n5
+    image_definition: null
+    label: core-02
+    node_definition: csr1000v
+    parameters: {}
+    ram: null
+    tags: []
+    x: -200
+    y: 100
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i3
+        label: GigabitEthernet3
+        mac_address: null
+        type: physical
+        slot: 2
+      - id: i4
+        label: GigabitEthernet4
+        mac_address: null
+        type: physical
+        slot: 3
+      - id: i5
+        label: GigabitEthernet5
+        mac_address: null
+        type: physical
+        slot: 4
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname agg-01
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.1.21 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-CORE-01
+           ip address 100.126.1.50 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-CORE-02
+           ip address 100.126.1.66 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet3
+           description TO-VXLAN-TEST
+           ip address 100.126.51.1 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet4
+           description TO-TWR-01
+           ip address 100.126.50.1 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet5
+           description TO-TWR-02
+           ip address 100.126.50.17 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2700.1021.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.1.21
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n6
+    image_definition: null
+    label: agg-01
+    node_definition: csr1000v
+    parameters: {}
+    ram: null
+    tags: []
+    x: 100
+    y: -100
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i3
+        label: GigabitEthernet3
+        mac_address: null
+        type: physical
+        slot: 2
+      - id: i4
+        label: GigabitEthernet4
+        mac_address: null
+        type: physical
+        slot: 3
+      - id: i5
+        label: GigabitEthernet5
+        mac_address: null
+        type: physical
+        slot: 4
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname agg-02
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.1.22 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-CORE-01
+           ip address 100.126.1.58 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-CORE-02
+           ip address 100.126.1.74 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet3
+           description TO-PON-01
+           ip address 100.126.52.1 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet4
+           description TO-PON-02
+           ip address 100.126.52.17 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2700.1022.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.1.22
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n7
+    image_definition: null
+    label: agg-02
+    node_definition: csr1000v
+    parameters: {}
+    ram: null
+    tags: []
+    x: 100
+    y: 100
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i3
+        label: GigabitEthernet3
+        mac_address: null
+        type: physical
+        slot: 2
+      - id: i4
+        label: GigabitEthernet4
+        mac_address: null
+        type: physical
+        slot: 3
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname twr-01
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          vlan 1104
+          !
+          vlan 1106
+          !
+          l2vpn evpn
+           replication-type ingress
+          !
+          l2vpn evpn instance 1104 vlan-based
+           encapsulation vxlan
+           route-target export 1104:1104
+           route-target import 1104:1104
+          !
+          l2vpn evpn instance 1106 vlan-based
+           encapsulation vxlan
+           route-target export 1106:1106
+           route-target import 1106:1106
+          !
+          vlan configuration 1104
+           member evpn-instance 1104 vni 1104
+          !
+          vlan configuration 1106
+           member evpn-instance 1106 vni 1106
+          !
+          interface Loopback0
+           ip address 100.127.50.101 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-AGG-01
+           ip address 100.126.50.2 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-TWR-03
+           ip address 100.126.50.9 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface nve1
+           no shutdown
+           source-interface Loopback0
+           host-reachability protocol bgp
+           member vni 1104 ingress-replication
+           member vni 1106 ingress-replication
+          !
+          interface Vlan1104
+           ip address 198.18.104.101 255.255.255.0
+           no shutdown
+          !
+          interface Vlan1106
+           ip address 198.18.106.101 255.255.255.0
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2705.0101.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.50.101
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n8
+    image_definition: null
+    label: twr-01
+    node_definition: csr1000v
+    parameters: {}
+    ram: 3072
+    tags: []
+    x: 400
+    y: -200
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname twr-02
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          vlan 1104
+          !
+          vlan 1106
+          !
+          l2vpn evpn
+           replication-type ingress
+          !
+          l2vpn evpn instance 1104 vlan-based
+           encapsulation vxlan
+           route-target export 1104:1104
+           route-target import 1104:1104
+          !
+          l2vpn evpn instance 1106 vlan-based
+           encapsulation vxlan
+           route-target export 1106:1106
+           route-target import 1106:1106
+          !
+          vlan configuration 1104
+           member evpn-instance 1104 vni 1104
+          !
+          vlan configuration 1106
+           member evpn-instance 1106 vni 1106
+          !
+          interface Loopback0
+           ip address 100.127.50.102 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-AGG-01
+           ip address 100.126.50.18 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-TWR-03
+           ip address 100.126.50.25 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet3
+           description TO-PON-01-CROSSLINK
+           ip address 100.126.255.1 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface nve1
+           no shutdown
+           source-interface Loopback0
+           host-reachability protocol bgp
+           member vni 1104 ingress-replication
+           member vni 1106 ingress-replication
+          !
+          interface Vlan1104
+           ip address 198.18.104.102 255.255.255.0
+           no shutdown
+          !
+          interface Vlan1106
+           ip address 198.18.106.102 255.255.255.0
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2705.0102.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.50.102
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n9
+    image_definition: null
+    label: twr-02
+    node_definition: csr1000v
+    parameters: {}
+    ram: 3072
+    tags: []
+    x: 400
+    y: -50
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i3
+        label: GigabitEthernet3
+        mac_address: null
+        type: physical
+        slot: 2
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname twr-03
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          vlan 1104
+          !
+          vlan 1106
+          !
+          l2vpn evpn
+           replication-type ingress
+          !
+          l2vpn evpn instance 1104 vlan-based
+           encapsulation vxlan
+           route-target export 1104:1104
+           route-target import 1104:1104
+          !
+          l2vpn evpn instance 1106 vlan-based
+           encapsulation vxlan
+           route-target export 1106:1106
+           route-target import 1106:1106
+          !
+          vlan configuration 1104
+           member evpn-instance 1104 vni 1104
+          !
+          vlan configuration 1106
+           member evpn-instance 1106 vni 1106
+          !
+          interface Loopback0
+           ip address 100.127.50.103 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-TWR-01
+           ip address 100.126.50.10 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-TWR-02
+           ip address 100.126.50.26 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface nve1
+           no shutdown
+           source-interface Loopback0
+           host-reachability protocol bgp
+           member vni 1104 ingress-replication
+           member vni 1106 ingress-replication
+          !
+          interface Vlan1104
+           ip address 198.18.104.103 255.255.255.0
+           no shutdown
+          !
+          interface Vlan1106
+           ip address 198.18.106.103 255.255.255.0
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2705.0103.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.50.103
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n10
+    image_definition: null
+    label: twr-03
+    node_definition: csr1000v
+    parameters: {}
+    ram: 3072
+    tags: []
+    x: 600
+    y: -125
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname pon-01
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.52.101 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-AGG-02
+           ip address 100.126.52.2 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-TWR-02-CROSSLINK
+           ip address 100.126.255.2 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet3
+           description TO-PON-SW-01
+           ip address 100.126.52.9 255.255.255.248
+           ip router isis sa51
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2705.2101.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.52.101
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n11
+    image_definition: null
+    label: pon-01
+    node_definition: csr1000v
+    parameters: {}
+    ram: 3072
+    tags: []
+    x: 400
+    y: 100
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i3
+        label: GigabitEthernet3
+        mac_address: null
+        type: physical
+        slot: 2
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname pon-02
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.52.102 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-AGG-02
+           ip address 100.126.52.18 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-PON-SW-01
+           ip address 100.126.52.10 255.255.255.248
+           ip router isis sa51
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2705.2102.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.52.102
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n12
+    image_definition: null
+    label: pon-02
+    node_definition: csr1000v
+    parameters: {}
+    ram: 3072
+    tags: []
+    x: 400
+    y: 200
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname pon-03
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.52.103 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-PON-SW-01
+           ip address 100.126.52.11 255.255.255.248
+           ip router isis sa51
+           no shutdown
+          !
+          interface GigabitEthernet2
+           description TO-PON-04
+           ip address 100.126.52.33 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2705.2103.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.52.103
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n13
+    image_definition: null
+    label: pon-03
+    node_definition: csr1000v
+    parameters: {}
+    ram: 3072
+    tags: []
+    x: 600
+    y: 150
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i2
+        label: GigabitEthernet2
+        mac_address: null
+        type: physical
+        slot: 1
+  - boot_disk_size: null
+    configuration:
+      - name: iosxe_config.txt
+        content: |-
+          hostname pon-04
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.52.104 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet1
+           description TO-PON-03
+           ip address 100.126.52.34 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2705.2104.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.52.104
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+           !
+           address-family l2vpn evpn
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n14
+    image_definition: null
+    label: pon-04
+    node_definition: csr1000v
+    parameters: {}
+    ram: 3072
+    tags: []
+    x: 800
+    y: 150
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet1
+        mac_address: null
+        type: physical
+        slot: 0
+  - boot_disk_size: null
+    configuration:
+      - name: ios_config.txt
+        content: |-
+          hostname vxlan-test
+          !
+          no ip domain lookup
+          ip domain name lab.local
+          ip ssh version 2
+          !
+          aaa new-model
+          aaa authentication login default local
+          aaa authorization exec default local
+          !
+          username cisco privilege 15 secret 0 cisco
+          !
+          cdp run
+          !
+          event manager applet GENERATE-SSH-KEY
+           event timer countdown time 30
+           action 1.0 cli command "enable"
+           action 1.1 cli command "configure terminal"
+           action 1.2 cli command "crypto key generate rsa modulus 2048"
+           action 1.3 cli command "end"
+           action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+          !
+          interface Loopback0
+           ip address 100.127.51.1 255.255.255.255
+           ip router isis sa51
+          !
+          interface GigabitEthernet0/0
+           description TO-AGG-01
+           ip address 100.126.51.2 255.255.255.248
+           ip router isis sa51
+           isis network point-to-point
+           no shutdown
+          !
+          router isis sa51
+           net 49.0051.1001.2705.1001.00
+           is-type level-2-only
+           metric-style wide
+           log-adjacency-changes
+          !
+          router bgp 4208675309
+           bgp router-id 100.127.51.1
+           bgp log-neighbor-changes
+           timers bgp 5 15
+           neighbor EVPN-RR peer-group
+           neighbor EVPN-RR remote-as 4208675309
+           neighbor EVPN-RR update-source Loopback0
+           neighbor 100.127.1.1 peer-group EVPN-RR
+           neighbor 100.127.1.2 peer-group EVPN-RR
+           !
+           address-family ipv4 unicast
+            neighbor 100.127.1.1 activate
+            neighbor 100.127.1.2 activate
+          !
+          line con 0
+           logging synchronous
+          line vty 0 4
+           transport input ssh
+           login local
+          !
+          end
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n15
+    image_definition: null
+    label: vxlan-test
+    node_definition: iosv
+    parameters: {}
+    ram: null
+    tags: []
+    x: 100
+    y: -250
+    interfaces:
+      - id: i0
+        label: Loopback0
+        mac_address: null
+        type: loopback
+      - id: i1
+        label: GigabitEthernet0/0
+        mac_address: null
+        type: physical
+        slot: 0
+  - boot_disk_size: null
+    configuration: []
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n16
+    image_definition: null
+    label: pon-sw-01
+    node_definition: unmanaged_switch
+    parameters: {}
+    ram: null
+    tags: []
+    x: 500
+    y: 150
+    interfaces:
+      - id: i0
+        label: port0
+        mac_address: null
+        type: physical
+        slot: 0
+      - id: i1
+        label: port1
+        mac_address: null
+        type: physical
+        slot: 1
+      - id: i2
+        label: port2
+        mac_address: null
+        type: physical
+        slot: 2
+links:
+  - id: l0
+    n1: n0
+    n2: n1
+    i1: i0
+    i2: i1
+    conditioning: {}
+    label: ext-conn-port<->isp-01-GigabitEthernet0/0
+  - id: l1
+    n1: n1
+    n2: n2
+    i1: i2
+    i2: i1
+    conditioning: {}
+    label: isp-01-GigabitEthernet0/1<->edge-01-GigabitEthernet1
+  - id: l2
+    n1: n1
+    n2: n3
+    i1: i3
+    i2: i1
+    conditioning: {}
+    label: isp-01-GigabitEthernet0/2<->edge-02-GigabitEthernet1
+  - id: l3
+    n1: n2
+    n2: n3
+    i1: i2
+    i2: i2
+    conditioning: {}
+    label: edge-01-GigabitEthernet2<->edge-02-GigabitEthernet2
+  - id: l4
+    n1: n2
+    n2: n4
+    i1: i3
+    i2: i1
+    conditioning: {}
+    label: edge-01-GigabitEthernet3<->core-01-GigabitEthernet1
+  - id: l5
+    n1: n2
+    n2: n5
+    i1: i4
+    i2: i1
+    conditioning: {}
+    label: edge-01-GigabitEthernet4<->core-02-GigabitEthernet1
+  - id: l6
+    n1: n3
+    n2: n4
+    i1: i3
+    i2: i2
+    conditioning: {}
+    label: edge-02-GigabitEthernet3<->core-01-GigabitEthernet2
+  - id: l7
+    n1: n3
+    n2: n5
+    i1: i4
+    i2: i2
+    conditioning: {}
+    label: edge-02-GigabitEthernet4<->core-02-GigabitEthernet2
+  - id: l8
+    n1: n4
+    n2: n5
+    i1: i3
+    i2: i3
+    conditioning: {}
+    label: core-01-GigabitEthernet3<->core-02-GigabitEthernet3
+  - id: l9
+    n1: n4
+    n2: n6
+    i1: i4
+    i2: i1
+    conditioning: {}
+    label: core-01-GigabitEthernet4<->agg-01-GigabitEthernet1
+  - id: l10
+    n1: n4
+    n2: n7
+    i1: i5
+    i2: i1
+    conditioning: {}
+    label: core-01-GigabitEthernet5<->agg-02-GigabitEthernet1
+  - id: l11
+    n1: n5
+    n2: n6
+    i1: i4
+    i2: i2
+    conditioning: {}
+    label: core-02-GigabitEthernet4<->agg-01-GigabitEthernet2
+  - id: l12
+    n1: n5
+    n2: n7
+    i1: i5
+    i2: i2
+    conditioning: {}
+    label: core-02-GigabitEthernet5<->agg-02-GigabitEthernet2
+  - id: l13
+    n1: n6
+    n2: n15
+    i1: i3
+    i2: i1
+    conditioning: {}
+    label: agg-01-GigabitEthernet3<->vxlan-test-GigabitEthernet0/0
+  - id: l14
+    n1: n6
+    n2: n8
+    i1: i4
+    i2: i1
+    conditioning: {}
+    label: agg-01-GigabitEthernet4<->twr-01-GigabitEthernet1
+  - id: l15
+    n1: n6
+    n2: n9
+    i1: i5
+    i2: i1
+    conditioning: {}
+    label: agg-01-GigabitEthernet5<->twr-02-GigabitEthernet1
+  - id: l16
+    n1: n8
+    n2: n10
+    i1: i2
+    i2: i1
+    conditioning: {}
+    label: twr-01-GigabitEthernet2<->twr-03-GigabitEthernet1
+  - id: l17
+    n1: n9
+    n2: n10
+    i1: i2
+    i2: i2
+    conditioning: {}
+    label: twr-02-GigabitEthernet2<->twr-03-GigabitEthernet2
+  - id: l18
+    n1: n9
+    n2: n11
+    i1: i3
+    i2: i2
+    conditioning: {}
+    label: twr-02-GigabitEthernet3<->pon-01-GigabitEthernet2
+  - id: l19
+    n1: n7
+    n2: n11
+    i1: i3
+    i2: i1
+    conditioning: {}
+    label: agg-02-GigabitEthernet3<->pon-01-GigabitEthernet1
+  - id: l20
+    n1: n7
+    n2: n12
+    i1: i4
+    i2: i1
+    conditioning: {}
+    label: agg-02-GigabitEthernet4<->pon-02-GigabitEthernet1
+  - id: l21
+    n1: n11
+    n2: n16
+    i1: i3
+    i2: i0
+    conditioning: {}
+    label: pon-01-GigabitEthernet3<->pon-sw-01-port0
+  - id: l22
+    n1: n12
+    n2: n16
+    i1: i2
+    i2: i1
+    conditioning: {}
+    label: pon-02-GigabitEthernet2<->pon-sw-01-port1
+  - id: l23
+    n1: n16
+    n2: n13
+    i1: i2
+    i2: i1
+    conditioning: {}
+    label: pon-sw-01-port2<->pon-03-GigabitEthernet1
+  - id: l24
+    n1: n13
+    n2: n14
+    i1: i2
+    i2: i1
+    conditioning: {}
+    label: pon-03-GigabitEthernet2<->pon-04-GigabitEthernet1
+lab:
+  description: ISP Network Deployment - EVPN/VXLAN with IS-IS underlay
+  notes: CSR 1000v (3GB) for EVPN/VXLAN devices, IOSv for ISP and test routers, unmanaged
+    switch for PON segment
+  title: isp-network-deployment
+  version: 0.3.0
