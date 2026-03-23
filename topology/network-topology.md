@@ -56,7 +56,13 @@ This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalys
 |------------|------------|----------------|------|
 | vxlan-test | VXLAN Test | Catalyst 8000v | Test |
 
-**Total: 15 devices**
+### Unmanaged Switch
+
+| Hostname  | Role             | Platform              | Tier   |
+|-----------|------------------|-----------------------|--------|
+| pon-sw-01 | Unmanaged Switch | CML Unmanaged Switch  | Access |
+
+**Total: 16 devices**
 
 ---
 
@@ -68,25 +74,31 @@ This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalys
                                            +-- vxlan-test
                                            |
   isp-01 --+-- edge-01 --+-- core-01 --+-- agg-01 --+-- twr-01 --+-- twr-03
-            |             |             |            +-- twr-02 ---+
-            +-- edge-02 --+-- core-02 --+              (WISP)
-                                        |
-                                        +-- agg-02 --+-- pon-01 --+-- pon-03 -- pon-04
-                                                     +-- pon-02 --+
-                                                         (FISP)
+            |      |      |      ||     |            +-- twr-02 ---+
+            +-- edge-02 --+-- core-02 --+              (WISP) |
+                   |         (L3 EtherChannel)                 |
+              (edge link)              |              twr-02 --+-- pon-01
+                                       |                (cross-link)  |
+                                       +-- agg-02 --+-- pon-01 --+
+                                                    |            +--[pon-sw-01]-- pon-03 -- pon-04
+                                                    +-- pon-02 --+
+                                                        (FISP)
   IOSv   Cat8000v       Cat8000v           Cat8000v            Cat8000v
 ```
 
 ### Connection Summary
 
 - **isp-01** — Upstream ISP router, connects to **edge-01** and **edge-02**
+- **edge-01 ↔ edge-02** interconnect via 100.126.1.32/29
 - **edge-01, edge-02** connect to **core-01, core-02** via point-to-point links
+- **core-01 ↔ core-02** interconnect via L3 EtherChannel (100.126.1.40/29, routed port-channel)
 - **core-01, core-02** connect to **agg-01, agg-02** via point-to-point links
 - **vxlan-test** connects to **agg-01** (VXLAN testing)
 - **agg-01** connects downstream to **twr-01, twr-02** — WISP topology (wireless, OSPF)
 - **twr-03** connects to **twr-01** and **twr-02** (not directly to agg-01)
+- **twr-02 ↔ pon-01** cross-link between WISP and FISP (100.126.255.0/29)
 - **agg-02** connects downstream to **pon-01, pon-02** — FISP topology (fiber, BGP)
-- **pon-03** connects to **pon-01** and **pon-02** (not directly to agg-02)
+- **pon-01, pon-02, pon-03** connect via **pon-sw-01** (unmanaged switch, 100.126.52.8/29)
 - **pon-04** connects to **pon-03** (not directly to agg-02)
 - **Customer cloud (1x)** connects on the access far-right edge
 
@@ -120,26 +132,30 @@ This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalys
 
 | Link                  | Device A | Interface      | IP                        | Device B | Interface      | IP                        |
 |-----------------------|----------|----------------|---------------------------|----------|----------------|---------------------------|
-| isp-01 ↔ edge-01     | isp-01   | GigEth0/x          | `[VERIFY]`                | edge-01  | GigEth0/x          | `[VERIFY]`                |
-| isp-01 ↔ edge-02     | isp-01   | GigEth0/x          | `[VERIFY]`                | edge-02  | GigEth0/x          | `[VERIFY]`                |
-| edge-01 ↔ core-01    | edge-01  | GigEth0/x          | `[VERIFY]`                | core-01  | GigEth0/x    | `[VERIFY]`                |
-| edge-01 ↔ core-02    | edge-01  | GigEth0/x          | `[VERIFY]`                | core-02  | GigEth0/x    | `[VERIFY]`                |
-| edge-02 ↔ core-01    | edge-02  | GigEth0/x          | `[VERIFY]`                | core-01  | GigEth0/x    | `[VERIFY]`                |
-| edge-02 ↔ core-02    | edge-02  | GigEth0/x          | `[VERIFY]`                | core-02  | GigEth0/x    | `[VERIFY]`                |
-| core-01 ↔ agg-01     | core-01  | GigEth0/x    | 198.51.0.0/31 `[VERIFY]`  | agg-01   | GigEth0/x    | 198.51.0.1/31 `[VERIFY]`  |
-| core-01 ↔ agg-02     | core-01  | GigEth0/x    | 198.51.0.2/31 `[VERIFY]`  | agg-02   | GigEth0/x    | 198.51.0.3/31 `[VERIFY]`  |
-| core-02 ↔ agg-01     | core-02  | GigEth0/x    | 198.51.0.4/31 `[VERIFY]`  | agg-01   | GigEth0/x    | 198.51.0.5/31 `[VERIFY]`  |
-| core-02 ↔ agg-02     | core-02  | GigEth0/x    | 198.51.0.6/31 `[VERIFY]`  | agg-02   | GigEth0/x    | 198.51.0.7/31 `[VERIFY]`  |
-| agg-01 ↔ vxlan-test  | agg-01   | GigEth0/x    | `[VERIFY]`                | vxlan-test | GigEth0/x        | `[VERIFY]`                |
-| agg-01 ↔ twr-01      | agg-01   | GigEth0/x    | `[VERIFY]`                | twr-01   | GigEth0/x          | `[VERIFY]`                |
-| agg-01 ↔ twr-02      | agg-01   | GigEth0/x    | `[VERIFY]`                | twr-02   | GigEth0/x          | `[VERIFY]`                |
-| twr-01 ↔ twr-03      | twr-01   | GigEth0/x          | `[VERIFY]`                | twr-03   | GigEth0/x          | `[VERIFY]`                |
-| twr-02 ↔ twr-03      | twr-02   | GigEth0/x          | `[VERIFY]`                | twr-03   | GigEth0/x          | `[VERIFY]`                |
-| agg-02 ↔ pon-01      | agg-02   | GigEth0/x    | `[VERIFY]`                | pon-01   | GigEth0/x          | `[VERIFY]`                |
-| agg-02 ↔ pon-02      | agg-02   | GigEth0/x    | `[VERIFY]`                | pon-02   | GigEth0/x          | `[VERIFY]`                |
-| pon-01 ↔ pon-03      | pon-01   | GigEth0/x          | `[VERIFY]`                | pon-03   | GigEth0/x          | `[VERIFY]`                |
-| pon-02 ↔ pon-03      | pon-02   | GigEth0/x          | `[VERIFY]`                | pon-03   | GigEth0/x          | `[VERIFY]`                |
-| pon-03 ↔ pon-04      | pon-03   | GigEth0/x          | `[VERIFY]`                | pon-04   | GigEth0/x          | `[VERIFY]`                |
+| isp-01 ↔ edge-01     | isp-01   | GigEth0/x          | 203.0.113.1/29            | edge-01  | GigEth0/x          | 203.0.113.2/29            |
+| isp-01 ↔ edge-02     | isp-01   | GigEth0/x          | 203.0.113.9/29            | edge-02  | GigEth0/x          | 203.0.113.10/29           |
+| edge-01 ↔ edge-02    | edge-01  | GigEth0/x          | 100.126.1.33/29           | edge-02  | GigEth0/x          | 100.126.1.34/29           |
+| edge-01 ↔ core-01    | edge-01  | GigEth0/x          | 100.126.1.1/29            | core-01  | GigEth0/x          | 100.126.1.2/29            |
+| edge-01 ↔ core-02    | edge-01  | GigEth0/x          | 100.126.1.9/29            | core-02  | GigEth0/x          | 100.126.1.10/29           |
+| edge-02 ↔ core-01    | edge-02  | GigEth0/x          | 100.126.1.17/29           | core-01  | GigEth0/x          | 100.126.1.18/29           |
+| edge-02 ↔ core-02    | edge-02  | GigEth0/x          | 100.126.1.25/29           | core-02  | GigEth0/x          | 100.126.1.26/29           |
+| core-01 ↔ core-02 (L3 EtherChannel) | core-01 | Port-channel (routed) | 100.126.1.41/29 | core-02 | Port-channel (routed) | 100.126.1.42/29 |
+| core-01 ↔ agg-01     | core-01  | GigEth0/x          | 100.126.1.49/29           | agg-01   | GigEth0/x          | 100.126.1.50/29           |
+| core-01 ↔ agg-02     | core-01  | GigEth0/x          | 100.126.1.57/29           | agg-02   | GigEth0/x          | 100.126.1.58/29           |
+| core-02 ↔ agg-01     | core-02  | GigEth0/x          | 100.126.1.65/29           | agg-01   | GigEth0/x          | 100.126.1.66/29           |
+| core-02 ↔ agg-02     | core-02  | GigEth0/x          | 100.126.1.73/29           | agg-02   | GigEth0/x          | 100.126.1.74/29           |
+| agg-01 ↔ vxlan-test  | agg-01   | GigEth0/x          | 100.126.51.1/29           | vxlan-test | GigEth0/x          | 100.126.51.2/29           |
+| agg-01 ↔ twr-01      | agg-01   | GigEth0/x          | 100.126.50.1/29           | twr-01   | GigEth0/x          | 100.126.50.2/29           |
+| agg-01 ↔ twr-02      | agg-01   | GigEth0/x          | 100.126.50.17/29          | twr-02   | GigEth0/x          | 100.126.50.18/29          |
+| twr-01 ↔ twr-03      | twr-01   | GigEth0/x          | 100.126.50.9/29           | twr-03   | GigEth0/x          | 100.126.50.10/29          |
+| twr-02 ↔ twr-03      | twr-02   | GigEth0/x          | 100.126.50.25/29          | twr-03   | GigEth0/x          | 100.126.50.26/29          |
+| twr-02 ↔ pon-01      | twr-02   | GigEth0/x          | 100.126.255.1/29          | pon-01   | GigEth0/x          | 100.126.255.2/29          |
+| agg-02 ↔ pon-01      | agg-02   | GigEth0/x          | 100.126.52.1/29           | pon-01   | GigEth0/x          | 100.126.52.2/29           |
+| agg-02 ↔ pon-02      | agg-02   | GigEth0/x          | 100.126.52.17/29          | pon-02   | GigEth0/x          | 100.126.52.18/29          |
+| pon-01 ↔ pon-sw-01   | pon-01   | GigEth0/x          | 100.126.52.9/29           | pon-sw-01 | —                 | — (L2 unmanaged)          |
+| pon-02 ↔ pon-sw-01   | pon-02   | GigEth0/x          | 100.126.52.10/29          | pon-sw-01 | —                 | — (L2 unmanaged)          |
+| pon-sw-01 ↔ pon-03   | pon-sw-01 | —                 | — (L2 unmanaged)          | pon-03   | GigEth0/x          | 100.126.52.11/29          |
+| pon-03 ↔ pon-04      | pon-03   | GigEth0/x          | 100.126.52.33/29          | pon-04   | GigEth0/x          | 100.126.52.34/29          |
 
 > Interface names: GigabitEthernet for Catalyst 8000v and IOSv. `[VERIFY]` exact port assignments.
 
