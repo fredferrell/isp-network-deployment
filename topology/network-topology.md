@@ -273,6 +273,13 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 
 > All devices configured with SSH access for remote management. Credentials stored in .env (gitignored).
 
+### External Access (isp-01)
+
+- **isp-01** has an additional **external access interface** bridged to the CML host network
+- A **default route** on isp-01 points out this bridged interface, providing external reachability
+- SSH into **isp-01** first, then hop to all other devices behind it
+- isp-01 serves as the **jump host / bastion** for the entire lab
+
 ---
 
 ## VXLAN Configuration (Catalyst 8000v)
