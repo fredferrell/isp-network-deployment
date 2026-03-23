@@ -1,6 +1,6 @@
 lab:
   description: "ISP Network Deployment - EVPN/VXLAN with IS-IS underlay"
-  notes: "Catalyst 8000v for EVPN/VXLAN devices, IOSv for ISP router, unmanaged switch for PON segment"
+  notes: "CSR 1000v (3GB) for EVPN/VXLAN devices, IOSv for ISP and test routers, unmanaged switch for PON segment"
   title: "isp-network-deployment"
   version: "0.2.0"
 
@@ -92,11 +92,11 @@ nodes:
         type: physical
 
   # ============================================================
-  # Edge Routers - Catalyst 8000v
+  # Edge Routers - CSR 1000v
   # ============================================================
   - id: n1
     label: edge-01
-    node_definition: cat8000v
+    node_definition: csr1000v
     x: -500
     y: -100
     configuration: |-
@@ -193,7 +193,7 @@ nodes:
 
   - id: n2
     label: edge-02
-    node_definition: cat8000v
+    node_definition: csr1000v
     x: -500
     y: 100
     configuration: |-
@@ -289,11 +289,11 @@ nodes:
         type: physical
 
   # ============================================================
-  # Core Routers - Catalyst 8000v (Route Reflectors)
+  # Core Routers - CSR 1000v (Route Reflectors)
   # ============================================================
   - id: n3
     label: core-01
-    node_definition: cat8000v
+    node_definition: csr1000v
     x: -200
     y: -100
     configuration: |-
@@ -442,7 +442,7 @@ nodes:
 
   - id: n4
     label: core-02
-    node_definition: cat8000v
+    node_definition: csr1000v
     x: -200
     y: 100
     configuration: |-
@@ -590,11 +590,11 @@ nodes:
         type: physical
 
   # ============================================================
-  # Aggregation Routers - Catalyst 8000v
+  # Aggregation Routers - CSR 1000v
   # ============================================================
   - id: n5
     label: agg-01
-    node_definition: cat8000v
+    node_definition: csr1000v
     x: 100
     y: -100
     configuration: |-
@@ -701,7 +701,7 @@ nodes:
 
   - id: n6
     label: agg-02
-    node_definition: cat8000v
+    node_definition: csr1000v
     x: 100
     y: 100
     configuration: |-
@@ -797,11 +797,12 @@ nodes:
         type: physical
 
   # ============================================================
-  # WISP - Tower Routers - Catalyst 8000v
+  # WISP - Tower Routers - CSR 1000v
   # ============================================================
   - id: n7
     label: twr-01
-    node_definition: cat8000v
+    node_definition: csr1000v
+    ram: 2048
     x: 400
     y: -200
     configuration: |-
@@ -916,7 +917,8 @@ nodes:
 
   - id: n8
     label: twr-02
-    node_definition: cat8000v
+    node_definition: csr1000v
+    ram: 2048
     x: 400
     y: -50
     configuration: |-
@@ -1041,7 +1043,8 @@ nodes:
 
   - id: n9
     label: twr-03
-    node_definition: cat8000v
+    node_definition: csr1000v
+    ram: 2048
     x: 600
     y: -125
     configuration: |-
@@ -1155,11 +1158,12 @@ nodes:
         type: physical
 
   # ============================================================
-  # FISP - PON Routers - Catalyst 8000v
+  # FISP - PON Routers - CSR 1000v
   # ============================================================
   - id: n10
     label: pon-01
-    node_definition: cat8000v
+    node_definition: csr1000v
+    ram: 2048
     x: 400
     y: 100
     configuration: |-
@@ -1245,7 +1249,8 @@ nodes:
 
   - id: n11
     label: pon-02
-    node_definition: cat8000v
+    node_definition: csr1000v
+    ram: 2048
     x: 400
     y: 200
     configuration: |-
@@ -1321,7 +1326,8 @@ nodes:
 
   - id: n12
     label: pon-03
-    node_definition: cat8000v
+    node_definition: csr1000v
+    ram: 2048
     x: 600
     y: 150
     configuration: |-
@@ -1397,7 +1403,8 @@ nodes:
 
   - id: n13
     label: pon-04
-    node_definition: cat8000v
+    node_definition: csr1000v
+    ram: 2048
     x: 800
     y: 150
     configuration: |-
@@ -1463,11 +1470,11 @@ nodes:
         type: physical
 
   # ============================================================
-  # VXLAN Test Router - Catalyst 8000v
+  # VXLAN Test Router - IOSv
   # ============================================================
   - id: n14
     label: vxlan-test
-    node_definition: cat8000v
+    node_definition: iosv
     x: 100
     y: -250
     configuration: |-
@@ -1489,7 +1496,7 @@ nodes:
        ip address 100.127.51.1 255.255.255.255
        ip router isis sa51
       !
-      interface GigabitEthernet1
+      interface GigabitEthernet0/0
        description TO-AGG-01
        ip address 100.126.51.2 255.255.255.248
        ip router isis sa51
@@ -1515,10 +1522,6 @@ nodes:
        address-family ipv4 unicast
         neighbor 100.127.1.1 activate
         neighbor 100.127.1.2 activate
-       !
-       address-family l2vpn evpn
-        neighbor 100.127.1.1 activate
-        neighbor 100.127.1.2 activate
       !
       line con 0
        logging synchronous
@@ -1529,7 +1532,7 @@ nodes:
       end
     interfaces:
       - id: i0
-        label: GigabitEthernet1
+        label: GigabitEthernet0/0
         type: physical
 
   # ============================================================

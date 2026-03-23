@@ -233,7 +233,7 @@ OUTPUT:
 ### CDP Commands
 
 - [ ] All devices: `show cdp neighbors` — verify expected neighbor count and hostnames
-- [ ] All devices: `show cdp neighbors detail` — verify platform matches (Cat8000v or IOSv)
+- [ ] All devices: `show cdp neighbors detail` — verify platform matches (CSR1000v or IOSv)
 - [ ] Verify CDP is enabled globally: `show cdp`
 - [ ] Verify CDP is enabled on all active interfaces: `show cdp interface`
 

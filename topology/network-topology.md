@@ -2,40 +2,40 @@
 
 ## Overview
 
-This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalyst 8000v** (IOS-XE) for all devices requiring EVPN/VXLAN and **IOSv** for the upstream ISP router. IS-IS underlay with EVPN/VXLAN overlay throughout. Designed to fit within a 64 GB RAM CML instance (~56.5 GB total).
+This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **CSR 1000v** (IOS-XE) for all devices requiring EVPN/VXLAN and **IOSv** for the upstream ISP router. IS-IS underlay with EVPN/VXLAN overlay throughout. Designed to fit within a 64 GB RAM CML instance (~41 GB total).
 
 ## Nodes Used in This Lab
 
-### Core — Cisco Catalyst 8000v (IOS-XE)
+### Core — Cisco CSR 1000v (IOS-XE)
 
 | Hostname | Role        | Platform       | Tier |
 |----------|-------------|----------------|------|
-| core-01  | Core Router | Catalyst 8000v | Core |
-| core-02  | Core Router | Catalyst 8000v | Core |
+| core-01  | Core Router | CSR 1000v | Core |
+| core-02  | Core Router | CSR 1000v | Core |
 
-### Aggregation — Cisco Catalyst 8000v (IOS-XE)
+### Aggregation — Cisco CSR 1000v (IOS-XE)
 
 | Hostname | Role        | Platform       | Tier        |
 |----------|-------------|----------------|-------------|
-| agg-01   | Aggregation | Catalyst 8000v | Aggregation |
-| agg-02   | Aggregation | Catalyst 8000v | Aggregation |
+| agg-01   | Aggregation | CSR 1000v | Aggregation |
+| agg-02   | Aggregation | CSR 1000v | Aggregation |
 
-### FISP (Fiber ISP) — PON Access — Cisco Catalyst 8000v (IOS-XE)
+### FISP (Fiber ISP) — PON Access — Cisco CSR 1000v (IOS-XE)
 
 | Hostname | Role     | Platform        | Tier   |
 |----------|----------|-----------------|--------|
-| pon-01   | FISP PON | Catalyst 8000v  | Access |
-| pon-02   | FISP PON | Catalyst 8000v  | Access |
-| pon-03   | FISP PON | Catalyst 8000v  | Access |
-| pon-04   | FISP PON | Catalyst 8000v  | Access |
+| pon-01   | FISP PON | CSR 1000v  | Access |
+| pon-02   | FISP PON | CSR 1000v  | Access |
+| pon-03   | FISP PON | CSR 1000v  | Access |
+| pon-04   | FISP PON | CSR 1000v  | Access |
 
-### WISP (Wireless ISP) — TWR Access — Cisco Catalyst 8000v (IOS-XE)
+### WISP (Wireless ISP) — TWR Access — Cisco CSR 1000v (IOS-XE)
 
 | Hostname | Role       | Platform        | Tier   |
 |----------|------------|-----------------|--------|
-| twr-01   | WISP Tower | Catalyst 8000v  | Access |
-| twr-02   | WISP Tower | Catalyst 8000v  | Access |
-| twr-03   | WISP Tower | Catalyst 8000v  | Access |
+| twr-01   | WISP Tower | CSR 1000v  | Access |
+| twr-02   | WISP Tower | CSR 1000v  | Access |
+| twr-03   | WISP Tower | CSR 1000v  | Access |
 
 ### ISP — Cisco IOSv
 
@@ -43,18 +43,18 @@ This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalys
 |----------|------------|----------|------|
 | isp-01   | ISP Router | IOSv     | ISP  |
 
-### Edge — Cisco Catalyst 8000v (IOS-XE)
+### Edge — Cisco CSR 1000v (IOS-XE)
 
 | Hostname | Role        | Platform       | Tier |
 |----------|-------------|----------------|------|
-| edge-01  | Edge Router | Catalyst 8000v | Edge |
-| edge-02  | Edge Router | Catalyst 8000v | Edge |
+| edge-01  | Edge Router | CSR 1000v | Edge |
+| edge-02  | Edge Router | CSR 1000v | Edge |
 
-### Test — Cisco Catalyst 8000v (IOS-XE)
+### Test — Cisco CSR 1000v (IOS-XE)
 
 | Hostname   | Role       | Platform       | Tier |
 |------------|------------|----------------|------|
-| vxlan-test | VXLAN Test | Catalyst 8000v | Test |
+| vxlan-test | VXLAN Test | CSR 1000v | Test |
 
 ### Unmanaged Switch
 
@@ -83,7 +83,7 @@ This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalys
                                                     |            +--[pon-sw-01]-- pon-03 -- pon-04
                                                     +-- pon-02 --+
                                                         (FISP)
-  IOSv   Cat8000v       Cat8000v           Cat8000v            Cat8000v
+  IOSv   CSR1000v       CSR1000v           CSR1000v            CSR1000v
 ```
 
 ### Connection Summary
@@ -159,7 +159,7 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 | pon-sw-01 ↔ pon-03   | pon-sw-01 | —                 | — (L2 unmanaged)          | pon-03   | GigEth0/x          | 100.126.52.11/29          |
 | pon-03 ↔ pon-04      | pon-03   | GigEth0/x          | 100.126.52.33/29          | pon-04   | GigEth0/x          | 100.126.52.34/29          |
 
-> Interface names: GigabitEthernet for Catalyst 8000v and IOSv. `[VERIFY]` exact port assignments.
+> Interface names: GigabitEthernet for CSR 1000v and IOSv. `[VERIFY]` exact port assignments.
 
 ### Customer/Overlay Networks
 
@@ -241,7 +241,7 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 ### WISP — TWR Devices (twr-01 through twr-03)
 
 - **Role:** Wireless Internet Service Provider — customer access via tower infrastructure
-- **Platform:** Cisco Catalyst 8000v
+- **Platform:** Cisco CSR 1000v
 - **Overlay:** EVPN/VXLAN (via agg-01)
 - **Underlay:** IS-IS (area 49.0051, instance sa51)
 - **Count:** 3 devices
@@ -249,7 +249,7 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 ### FISP — PON Devices (pon-01 through pon-04)
 
 - **Role:** Fiber Internet Service Provider — customer access via PON
-- **Platform:** Cisco Catalyst 8000v
+- **Platform:** Cisco CSR 1000v
 - **Overlay:** EVPN/VXLAN (via agg-02)
 - **Underlay:** IS-IS (area 49.0051, instance sa51)
 - **Count:** 4 devices
@@ -288,7 +288,7 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 
 ---
 
-## VXLAN Configuration (Catalyst 8000v)
+## VXLAN Configuration (CSR 1000v)
 
 | Parameter        | Value                          |
 |-----------------|--------------------------------|
@@ -330,7 +330,7 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 | CML Instance | (see .env file)                    |
 | API Endpoint | /api/v2                            |
 | Lab Name     | isp-network-deployment             |
-| Node Images  | Catalyst 8000v, IOSv               |
+| Node Images  | CSR 1000v, IOSv               |
 | Deployment   | Automated via CML REST API         |
 
 ### API Deployment Method
@@ -350,7 +350,7 @@ lab:
 nodes:
   - id: n0
     label: device-hostname
-    node_definition: cat8000v    # or iosv, unmanaged_switch
+    node_definition: csr1000v    # or iosv, unmanaged_switch
     configuration: |
       hostname device-hostname
       ...
@@ -371,7 +371,7 @@ links:
 
 | Device Type      | CML node_definition |
 |-----------------|---------------------|
-| Catalyst 8000v  | cat8000v            |
+| CSR 1000v   | csr1000v            |
 | IOSv            | iosv                |
 | Unmanaged Switch | unmanaged_switch   |
 
@@ -388,6 +388,6 @@ See: [Network Image.png](./Network%20Image.png)
 - All values marked `[VERIFY]` need confirmation against the high-resolution topology diagram
 - Interface names: Ethernet for Nexus 9000v, GigabitEthernet for IOSv
 - ISP: isp-01 (IOSv — no EVPN/VXLAN needed, 512 MB RAM)
-- All other devices: Catalyst 8000v (4 GB RAM each)
-- Total RAM: ~56.5 GB (fits 64 GB CML instance)
+- All other devices: CSR 1000v (3 GB RAM each)
+- Total RAM: ~41 GB (fits 64 GB CML instance with headroom)
 - Customer cloud connections exist on both the left (agg) and right (access) edges
