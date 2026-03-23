@@ -874,7 +874,7 @@ nodes:
   - id: n7
     label: twr-01
     node_definition: csr1000v
-    ram: 2048
+    ram: 3072
     x: 400
     y: -200
     configuration: |-
@@ -998,7 +998,7 @@ nodes:
   - id: n8
     label: twr-02
     node_definition: csr1000v
-    ram: 2048
+    ram: 3072
     x: 400
     y: -50
     configuration: |-
@@ -1132,7 +1132,7 @@ nodes:
   - id: n9
     label: twr-03
     node_definition: csr1000v
-    ram: 2048
+    ram: 3072
     x: 600
     y: -125
     configuration: |-
@@ -1259,7 +1259,7 @@ nodes:
   - id: n10
     label: pon-01
     node_definition: csr1000v
-    ram: 2048
+    ram: 3072
     x: 400
     y: 100
     configuration: |-
@@ -1354,7 +1354,7 @@ nodes:
   - id: n11
     label: pon-02
     node_definition: csr1000v
-    ram: 2048
+    ram: 3072
     x: 400
     y: 200
     configuration: |-
@@ -1439,7 +1439,7 @@ nodes:
   - id: n12
     label: pon-03
     node_definition: csr1000v
-    ram: 2048
+    ram: 3072
     x: 600
     y: 150
     configuration: |-
@@ -1524,7 +1524,7 @@ nodes:
   - id: n13
     label: pon-04
     node_definition: csr1000v
-    ram: 2048
+    ram: 3072
     x: 800
     y: 150
     configuration: |-
