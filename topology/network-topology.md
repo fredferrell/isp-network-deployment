@@ -369,11 +369,77 @@ links:
 
 ### Node Definitions
 
-| Device Type      | CML node_definition |
-|-----------------|---------------------|
-| CSR 1000v   | csr1000v            |
-| IOSv            | iosv                |
-| Unmanaged Switch | unmanaged_switch   |
+| Device Type      | CML node_definition | RAM    |
+|-----------------|---------------------|--------|
+| CSR 1000v       | csr1000v            | 3072 MB |
+| IOSv            | iosv                | 512 MB  |
+| Unmanaged Switch | unmanaged_switch   | —       |
+
+### Staged Deployment Plan
+
+CML server has 4 CPU cores — cannot run all nodes simultaneously. Lab is deployed in stages, testing each before moving on.
+
+#### Stage 1 — Core Tier
+
+| Device     | State |
+|------------|-------|
+| ext-conn   | ON    |
+| isp-01     | ON    |
+| edge-01    | ON    |
+| edge-02    | ON    |
+| core-01    | ON    |
+| core-02    | ON    |
+| agg-01     | ON    |
+| agg-02     | ON    |
+| twr-01–03  | OFF   |
+| pon-01–04  | OFF   |
+| pon-sw-01  | OFF   |
+| vxlan-test | OFF   |
+
+**Tests:** IS-IS adjacencies, BGP EVPN sessions, L3 EtherChannel, loopback reachability, SSH access.
+
+#### Stage 2 — WISP (TWR)
+
+| Device     | State |
+|------------|-------|
+| ext-conn   | ON    |
+| isp-01     | ON    |
+| edge-01    | ON    |
+| edge-02    | ON    |
+| core-01    | ON    |
+| core-02    | ON    |
+| agg-01     | ON    |
+| agg-02     | OFF   |
+| twr-01     | ON    |
+| twr-02     | ON    |
+| twr-03     | ON    |
+| pon-01–04  | OFF   |
+| pon-sw-01  | OFF   |
+| vxlan-test | OFF   |
+
+**Tests:** TWR IS-IS adjacencies, BGP EVPN to RRs, VXLAN NVE status, VNI 1104/1106 overlay connectivity.
+
+#### Stage 3 — FISP (PON)
+
+| Device     | State |
+|------------|-------|
+| ext-conn   | ON    |
+| isp-01     | ON    |
+| edge-01    | ON    |
+| edge-02    | ON    |
+| core-01    | ON    |
+| core-02    | ON    |
+| agg-01     | OFF   |
+| agg-02     | ON    |
+| twr-01–03  | OFF   |
+| pon-01     | ON    |
+| pon-02     | ON    |
+| pon-03     | ON    |
+| pon-04     | ON    |
+| pon-sw-01  | ON    |
+| vxlan-test | OFF   |
+
+**Tests:** PON IS-IS adjacencies (including via pon-sw-01), BGP EVPN to RRs, loopback reachability to pon-04 (furthest device).
 
 ---
 
