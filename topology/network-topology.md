@@ -281,6 +281,7 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 ### External Access (isp-01)
 
 - **isp-01** has an additional **external access interface** bridged to the CML host network
+- Bridge interface IP is defined in `.env` as `ISP01_BRIDGE_IP`
 - A **default route** on isp-01 points out this bridged interface, providing external reachability
 - SSH from **isp-01** directly to every other device via loopback addresses
 - isp-01 serves as the **SSH gateway** for the entire lab (no multi-hop required)
