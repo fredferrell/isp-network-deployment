@@ -42,6 +42,14 @@ nodes:
       !
       cdp run
       !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+      !
       interface Loopback0
        ip address 100.127.0.1 255.255.255.255
        ip router isis sa51
@@ -113,6 +121,14 @@ nodes:
       username cisco privilege 15 secret 0 cisco
       !
       cdp run
+      !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
       !
       interface Loopback0
        ip address 100.127.0.11 255.255.255.255
@@ -210,6 +226,14 @@ nodes:
       username cisco privilege 15 secret 0 cisco
       !
       cdp run
+      !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
       !
       interface Loopback0
        ip address 100.127.0.12 255.255.255.255
@@ -311,6 +335,14 @@ nodes:
       !
       cdp run
       !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+      !
       interface Loopback0
        ip address 100.127.1.1 255.255.255.255
        ip router isis sa51
@@ -332,7 +364,6 @@ nodes:
       interface GigabitEthernet3
        description TO-CORE-02-ETHERCHANNEL
        no ip address
-       channel-group 1 mode active
        no shutdown
       !
       interface Port-channel1
@@ -340,6 +371,15 @@ nodes:
        ip address 100.126.1.41 255.255.255.248
        ip router isis sa51
        isis network point-to-point
+      !
+      event manager applet CONFIGURE-ETHERCHANNEL
+       event timer countdown time 60
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "interface GigabitEthernet3"
+       action 1.3 cli command "channel-group 1 mode active"
+       action 1.4 cli command "end"
+       action 1.5 cli command "no event manager applet CONFIGURE-ETHERCHANNEL"
       !
       interface GigabitEthernet4
        description TO-AGG-01
@@ -460,6 +500,14 @@ nodes:
       !
       cdp run
       !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+      !
       interface Loopback0
        ip address 100.127.1.2 255.255.255.255
        ip router isis sa51
@@ -481,7 +529,6 @@ nodes:
       interface GigabitEthernet3
        description TO-CORE-01-ETHERCHANNEL
        no ip address
-       channel-group 1 mode active
        no shutdown
       !
       interface Port-channel1
@@ -489,6 +536,15 @@ nodes:
        ip address 100.126.1.42 255.255.255.248
        ip router isis sa51
        isis network point-to-point
+      !
+      event manager applet CONFIGURE-ETHERCHANNEL
+       event timer countdown time 60
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "interface GigabitEthernet3"
+       action 1.3 cli command "channel-group 1 mode active"
+       action 1.4 cli command "end"
+       action 1.5 cli command "no event manager applet CONFIGURE-ETHERCHANNEL"
       !
       interface GigabitEthernet4
        description TO-AGG-01
@@ -612,6 +668,14 @@ nodes:
       !
       cdp run
       !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+      !
       interface Loopback0
        ip address 100.127.1.21 255.255.255.255
        ip router isis sa51
@@ -719,6 +783,14 @@ nodes:
       !
       cdp run
       !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+      !
       interface Loopback0
        ip address 100.127.1.22 255.255.255.255
        ip router isis sa51
@@ -819,6 +891,14 @@ nodes:
       username cisco privilege 15 secret 0 cisco
       !
       cdp run
+      !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
       !
       vlan 1104
       !
@@ -935,6 +1015,14 @@ nodes:
       username cisco privilege 15 secret 0 cisco
       !
       cdp run
+      !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
       !
       vlan 1104
       !
@@ -1062,6 +1150,14 @@ nodes:
       !
       cdp run
       !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+      !
       vlan 1104
       !
       vlan 1106
@@ -1181,6 +1277,14 @@ nodes:
       !
       cdp run
       !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+      !
       interface Loopback0
        ip address 100.127.52.101 255.255.255.255
        ip router isis sa51
@@ -1268,6 +1372,14 @@ nodes:
       !
       cdp run
       !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+      !
       interface Loopback0
        ip address 100.127.52.102 255.255.255.255
        ip router isis sa51
@@ -1344,6 +1456,14 @@ nodes:
       username cisco privilege 15 secret 0 cisco
       !
       cdp run
+      !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
       !
       interface Loopback0
        ip address 100.127.52.103 255.255.255.255
@@ -1422,6 +1542,14 @@ nodes:
       !
       cdp run
       !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
+      !
       interface Loopback0
        ip address 100.127.52.104 255.255.255.255
        ip router isis sa51
@@ -1491,6 +1619,14 @@ nodes:
       username cisco privilege 15 secret 0 cisco
       !
       cdp run
+      !
+      event manager applet GENERATE-SSH-KEY
+       event timer countdown time 30
+       action 1.0 cli command "enable"
+       action 1.1 cli command "configure terminal"
+       action 1.2 cli command "crypto key generate rsa modulus 2048"
+       action 1.3 cli command "end"
+       action 1.4 cli command "no event manager applet GENERATE-SSH-KEY"
       !
       interface Loopback0
        ip address 100.127.51.1 255.255.255.255
