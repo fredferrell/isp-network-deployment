@@ -256,18 +256,15 @@ OUTPUT:
 - [ ] → pon-04: ping 100.127.52.104
 - [ ] → vxlan-test: ping 100.127.51.1
 
-### From twr-03 (100.127.50.103) to FISP endpoints
+### From twr-03 (100.127.50.103) to core/edge/ISP
 
-- [ ] → pon-01: ping 100.127.52.101
-- [ ] → pon-02: ping 100.127.52.102
-- [ ] → pon-03: ping 100.127.52.103
-- [ ] → pon-04: ping 100.127.52.104
+- [ ] → isp-01: ping 100.127.0.1
+- [ ] → edge-01: ping 100.127.0.11
+- [ ] → edge-02: ping 100.127.0.12
+- [ ] → core-01: ping 100.127.1.1
+- [ ] → core-02: ping 100.127.1.2
+- [ ] → agg-01: ping 100.127.1.21
 
-### From pon-04 (100.127.52.104) to WISP endpoints
-
-- [ ] → twr-01: ping 100.127.50.101
-- [ ] → twr-02: ping 100.127.50.102
-- [ ] → twr-03: ping 100.127.50.103
 
 ### From vxlan-test (100.127.51.1) across fabric
 
