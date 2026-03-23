@@ -262,6 +262,19 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 
 ---
 
+## Device Access
+
+| Parameter        | Value                          |
+|-----------------|--------------------------------|
+| SSH             | Enabled on all devices         |
+| SSH Port        | 22                             |
+| Username        | (see .env file)                |
+| Password        | (see .env file)                |
+
+> All devices configured with SSH access for remote management. Credentials stored in .env (gitignored).
+
+---
+
 ## VXLAN Configuration (Catalyst 8000v)
 
 | Parameter        | Value                          |
@@ -299,11 +312,55 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 
 ## CML Deployment
 
-| Parameter     | Value                          |
-|--------------|--------------------------------|
-| CML Instance | (see .env file)                |
-| Lab Name     | isp-network-deployment         |
-| Node Images  | Catalyst 8000v, IOSv              |
+| Parameter     | Value                              |
+|--------------|------------------------------------|
+| CML Instance | (see .env file)                    |
+| API Endpoint | /api/v2                            |
+| Lab Name     | isp-network-deployment             |
+| Node Images  | Catalyst 8000v, IOSv               |
+| Deployment   | Automated via CML REST API         |
+
+### API Deployment Method
+
+Lab will be deployed via the CML REST API using a YAML topology file.
+
+- **Endpoint:** `POST /api/v2/import` — imports a complete lab from YAML
+- **Python client:** `client.import_lab_from_path("topology.yaml")`
+
+### CML YAML Topology Format
+
+```yaml
+lab:
+  description: ''
+  notes: ''
+  title: lab-name
+nodes:
+  - id: n0
+    label: device-hostname
+    node_definition: cat8000v    # or iosv, unmanaged_switch
+    configuration: |
+      hostname device-hostname
+      ...
+    interfaces:
+      - id: i0
+        label: GigabitEthernet1
+      - id: i1
+        label: GigabitEthernet2
+links:
+  - id: l0
+    n1: n0          # source node id
+    n2: n1          # destination node id
+    i1: i0          # source interface id
+    i2: i0          # destination interface id
+```
+
+### Node Definitions
+
+| Device Type      | CML node_definition |
+|-----------------|---------------------|
+| Catalyst 8000v  | cat8000v            |
+| IOSv            | iosv                |
+| Unmanaged Switch | unmanaged_switch   |
 
 ---
 
