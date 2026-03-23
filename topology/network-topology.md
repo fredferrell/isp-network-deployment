@@ -106,29 +106,31 @@ This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalys
 
 ## IP Addressing
 
-### Loopback Addresses (100.64.0.x/32)
+### Loopback Addresses (100.127.x.x/32)
 
-| Device   | Interface  | Address                   |
-|----------|------------|---------------------------|
-| core-01  | Loopback0  | 100.64.0.1/32 `[VERIFY]`  |
-| core-02  | Loopback0  | 100.64.0.2/32 `[VERIFY]`  |
-| agg-01   | Loopback0  | 100.64.0.3/32 `[VERIFY]`  |
-| agg-02   | Loopback0  | 100.64.0.4/32 `[VERIFY]`  |
-| isp-01   | Loopback0  | `[VERIFY]`                |
-| edge-01  | Loopback0  | `[VERIFY]`                |
-| edge-02  | Loopback0  | `[VERIFY]`                |
-| pon-01   | Loopback0  | `[VERIFY]`                |
-| pon-02   | Loopback0  | `[VERIFY]`                |
-| pon-03   | Loopback0  | `[VERIFY]`                |
-| pon-04   | Loopback0  | `[VERIFY]`                |
-| twr-01   | Loopback0  | `[VERIFY]`                |
-| twr-02   | Loopback0  | `[VERIFY]`                |
-| twr-03     | Loopback0  | `[VERIFY]`                |
-| vxlan-test | Loopback0  | `[VERIFY]`                |
+Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09/22/evpn-vxlan-interop-ipv4-ipv6-mikrotik-ip-infusion/).
 
-> Loopbacks serve as VTEP source addresses for VXLAN tunnels on Catalyst 8000v devices.
+| Device     | Interface  | IPv4 Address         | IPv6 Address                    |
+|------------|------------|----------------------|---------------------------------|
+| isp-01     | Loopback0  | 100.127.0.1/32       | 3fff:1ab:d127:d0::1/128         |
+| edge-01    | Loopback0  | 100.127.0.11/32      | 3fff:1ab:d127:d0::11/128        |
+| edge-02    | Loopback0  | 100.127.0.12/32      | 3fff:1ab:d127:d0::12/128        |
+| core-01    | Loopback0  | 100.127.1.1/32       | 3fff:1ab:d127:d1::1/128         |
+| core-02    | Loopback0  | 100.127.1.2/32       | 3fff:1ab:d127:d1::2/128         |
+| agg-01     | Loopback0  | 100.127.1.21/32      | 3fff:1ab:d127:d1::21/128        |
+| agg-02     | Loopback0  | 100.127.1.22/32      | 3fff:1ab:d127:d1::22/128        |
+| twr-01     | Loopback0  | 100.127.50.101/32    | 3fff:1ab:d127:d50::101/128      |
+| twr-02     | Loopback0  | 100.127.50.102/32    | 3fff:1ab:d127:d50::102/128      |
+| twr-03     | Loopback0  | 100.127.50.103/32    | 3fff:1ab:d127:d50::103/128      |
+| pon-01     | Loopback0  | 100.127.52.101/32    | 3fff:1ab:d127:d52::101/128      |
+| pon-02     | Loopback0  | 100.127.52.102/32    | 3fff:1ab:d127:d52::102/128      |
+| pon-03     | Loopback0  | 100.127.52.103/32    | 3fff:1ab:d127:d52::103/128      |
+| pon-04     | Loopback0  | 100.127.52.104/32    | 3fff:1ab:d127:d52::104/128      |
+| vxlan-test | Loopback0  | 100.127.51.1/32      | 3fff:1ab:d127:d51::1/128        |
 
-### Point-to-Point Links (198.51.0.x/31)
+> Loopbacks serve as VTEP source addresses for VXLAN tunnels. IPv6 addressing follows 3fff:1ab:d127 scheme from blog reference.
+
+### Point-to-Point Links
 
 | Link                  | Device A | Interface      | IP                        | Device B | Interface      | IP                        |
 |-----------------------|----------|----------------|---------------------------|----------|----------------|---------------------------|
@@ -159,24 +161,49 @@ This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalys
 
 > Interface names: GigabitEthernet for Catalyst 8000v and IOSv. `[VERIFY]` exact port assignments.
 
-### Customer/Bridge Networks (10.0.0.x)
+### Customer/Overlay Networks
 
-| Device   | Interface  | Network                 | Description      |
-|----------|------------|-------------------------|------------------|
-| agg-01   | `[VERIFY]` | 10.0.0.0/24 `[VERIFY]`  | Customer network |
-| agg-02   | `[VERIFY]` | 10.0.0.0/24 `[VERIFY]`  | Customer network |
+| Network         | VNI  | VLAN | Domain | Description                |
+|-----------------|------|------|--------|----------------------------|
+| 198.18.104.0/24 | 1104 | 1104 | WISP   | IPv4 customer overlay      |
+| 198.18.106.0/24 | 1106 | 1106 | WISP   | IPv6 customer overlay      |
 
-> Exact subnets and VLAN IDs need verification from the diagram.
+> FISP (PON) overlay networks to be defined following the same VNI/VLAN pattern.
 
 ---
 
 ## Underlay Protocol — IS-IS
 
-| IS-IS Area | Scope         |
-|-----------|---------------|
-| 49.0051   | All devices   |
+| Parameter      | Value                |
+|---------------|----------------------|
+| IS-IS Area     | 49.0051              |
+| Instance Name  | sa51                 |
+| IS Type        | Level-2 only         |
+| Metric Style   | Wide                 |
+| AFI Support    | IPv4 and IPv6 (dual-stack) |
+| Scope          | All devices          |
 
-> Single IS-IS area across the entire fabric. IS-IS provides the underlay routing for VXLAN VTEP reachability.
+### IS-IS System IDs (NET)
+
+| Device     | System ID        | NET                          |
+|------------|------------------|------------------------------|
+| isp-01     | 1001.2700.0001   | 49.0051.1001.2700.0001.00    |
+| edge-01    | 1001.2700.0011   | 49.0051.1001.2700.0011.00    |
+| edge-02    | 1001.2700.0012   | 49.0051.1001.2700.0012.00    |
+| core-01    | 1001.2700.1001   | 49.0051.1001.2700.1001.00    |
+| core-02    | 1001.2700.1002   | 49.0051.1001.2700.1002.00    |
+| agg-01     | 1001.2700.1021   | 49.0051.1001.2700.1021.00    |
+| agg-02     | 1001.2700.1022   | 49.0051.1001.2700.1022.00    |
+| twr-01     | 1001.2705.0101   | 49.0051.1001.2705.0101.00    |
+| twr-02     | 1001.2705.0102   | 49.0051.1001.2705.0102.00    |
+| twr-03     | 1001.2705.0103   | 49.0051.1001.2705.0103.00    |
+| pon-01     | 1001.2705.2101   | 49.0051.1001.2705.2101.00    |
+| pon-02     | 1001.2705.2102   | 49.0051.1001.2705.2102.00    |
+| pon-03     | 1001.2705.2103   | 49.0051.1001.2705.2103.00    |
+| pon-04     | 1001.2705.2104   | 49.0051.1001.2705.2104.00    |
+| vxlan-test | 1001.2705.1001   | 49.0051.1001.2705.1001.00    |
+
+> Single IS-IS area across the entire fabric. IS-IS provides the underlay routing for VXLAN VTEP reachability. System IDs follow the blog's convention: core/agg use 1001.2700.x, access uses 1001.2705.x.
 
 ---
 
@@ -192,18 +219,20 @@ This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalys
 
 ### BGP EVPN Configuration
 
-- **Address Family:** L2VPN EVPN
+- **Address Family:** L2VPN EVPN, IPv4 Unicast, IPv6 Unicast
 - **Encapsulation:** VXLAN (all EVPN domains)
-- **VTEP Source:** Loopback interfaces (100.64.0.x/32)
-- **Route Types:** Type-2 (MAC/IP), Type-5 (IP Prefix) `[VERIFY]`
+- **VTEP Source:** Loopback interfaces (100.127.x.x/32)
+- **Route Types:** Type-2 (MAC/IP), Type-3 (IMET), Type-5 (IP Prefix)
+- **Timers:** Keepalive 5s, Hold 15s
 
 ### BGP Design
 
 | Parameter        | Value                              |
 |-----------------|------------------------------------|
-| BGP AS          | `[VERIFY]` from diagram            |
-| Route Reflector | core-01, core-02 `[VERIFY]`       |
-| EVPN Peers      | Loopback-based iBGP `[VERIFY]`    |
+| BGP AS          | 4208675309 (private)               |
+| Route Reflector | core-01 (primary), core-02 (secondary) |
+| RR Clients      | All VTEP devices                   |
+| EVPN Peers      | Loopback-based iBGP                |
 
 ---
 
@@ -212,36 +241,59 @@ This lab deploys an ISP network in **Cisco Modeling Labs (CML)** using **Catalys
 ### WISP — TWR Devices (twr-01 through twr-03)
 
 - **Role:** Wireless Internet Service Provider — customer access via tower infrastructure
-- **Platform:** Cisco IOSv
+- **Platform:** Cisco Catalyst 8000v
 - **Overlay:** EVPN/VXLAN (via agg-01)
-- **Underlay:** IS-IS (area 49.0051)
+- **Underlay:** IS-IS (area 49.0051, instance sa51)
 - **Count:** 3 devices
 
 ### FISP — PON Devices (pon-01 through pon-04)
 
 - **Role:** Fiber Internet Service Provider — customer access via PON
-- **Platform:** Cisco IOSv
+- **Platform:** Cisco Catalyst 8000v
 - **Overlay:** EVPN/VXLAN (via agg-02)
-- **Underlay:** IS-IS (area 49.0051)
+- **Underlay:** IS-IS (area 49.0051, instance sa51)
 - **Count:** 4 devices
 
 ### Interconnection with Core/Aggregation
 
 - **agg-01 → twr-01, twr-02:** EVPN/VXLAN overlay with IS-IS underlay
 - **agg-02 → pon-01, pon-02:** EVPN/VXLAN overlay with IS-IS underlay
-- **IP addressing:** `[VERIFY]` transit link IPs from diagram
+- **IP addressing:** All transit link IPs assigned (see P2P links table)
 
 ---
 
 ## VXLAN Configuration (Catalyst 8000v)
 
-| Parameter        | Value                   |
-|-----------------|-------------------------|
-| VNI Range       | `[VERIFY]` from diagram |
-| VLAN-to-VNI Map | `[VERIFY]` from diagram |
-| Flood Mode      | BGP-based (EVPN)       |
-| ARP Suppression | `[VERIFY]`             |
-| NVE Interface   | nve1 `[VERIFY]`        |
+| Parameter        | Value                          |
+|-----------------|--------------------------------|
+| Flood Mode      | BGP-based (EVPN)              |
+| MAC Learning    | Disabled (control-plane only) |
+| NVE Interface   | nve1                          |
+
+### VNI Definitions
+
+| VNI  | VLAN | Type | Overlay Network    | Route Target   | Description       |
+|------|------|------|--------------------|----------------|-------------------|
+| 1104 | 1104 | L2   | 198.18.104.0/24    | 1104:1104      | IPv4 overlay      |
+| 1106 | 1106 | L2   | 198.18.106.0/24    | 1106:1106      | IPv6 overlay      |
+
+### Overlay Host Addresses (VNI 1104 — IPv4)
+
+| Device | IP Address       |
+|--------|------------------|
+| twr-01 | 198.18.104.101/24 |
+| twr-02 | 198.18.104.102/24 |
+| twr-03 | 198.18.104.103/24 |
+
+### Overlay Host Addresses (VNI 1106 — IPv6)
+
+| Device | IP Address       |
+|--------|------------------|
+| twr-01 | 198.18.106.101/24 |
+| twr-02 | 198.18.106.102/24 |
+| twr-03 | 198.18.106.103/24 |
+
+> VNI and overlay addresses from blog reference. PON/FISP overlay addresses to be defined.
 
 ---
 
