@@ -176,13 +176,84 @@
 - [ ] twr-02 → pon-01: ping 100.126.255.2
 - [ ] agg-01 → vxlan-test: ping 100.126.51.2
 
-## 9. SSH Hop Test (End-to-End)
+## 9. CDP Neighbor Validation
+
+> CDP must be enabled globally on all devices during initial deployment.
+
+### CDP Neighbor Count per Device
+
+| Device     | Expected CDP Neighbors |
+|------------|----------------------|
+| isp-01     | edge-01, edge-02 |
+| edge-01    | isp-01, edge-02, core-01, core-02 |
+| edge-02    | isp-01, edge-01, core-01, core-02 |
+| core-01    | edge-01, edge-02, core-02, agg-01, agg-02 |
+| core-02    | edge-01, edge-02, core-01, agg-01, agg-02 |
+| agg-01     | core-01, core-02, twr-01, twr-02, vxlan-test |
+| agg-02     | core-01, core-02, pon-01, pon-02 |
+| twr-01     | agg-01, twr-03 |
+| twr-02     | agg-01, twr-03, pon-01 |
+| twr-03     | twr-01, twr-02 |
+| pon-01     | agg-02, twr-02, pon-03 (via pon-sw-01) |
+| pon-02     | agg-02, pon-03 (via pon-sw-01) |
+| pon-03     | pon-01, pon-02 (via pon-sw-01), pon-04 |
+| pon-04     | pon-03 |
+| vxlan-test | agg-01 |
+
+### CDP Commands
+
+- [ ] All devices: `show cdp neighbors` — verify expected neighbor count and hostnames
+- [ ] All devices: `show cdp neighbors detail` — verify platform matches (Cat8000v or IOSv)
+- [ ] Verify CDP is enabled globally: `show cdp`
+- [ ] Verify CDP is enabled on all active interfaces: `show cdp interface`
+
+## 10. End-to-End Ping Tests (Loopback to Loopback)
+
+### From isp-01 (100.127.0.1) to all loopbacks
+
+- [ ] → edge-01: ping 100.127.0.11
+- [ ] → edge-02: ping 100.127.0.12
+- [ ] → core-01: ping 100.127.1.1
+- [ ] → core-02: ping 100.127.1.2
+- [ ] → agg-01: ping 100.127.1.21
+- [ ] → agg-02: ping 100.127.1.22
+- [ ] → twr-01: ping 100.127.50.101
+- [ ] → twr-02: ping 100.127.50.102
+- [ ] → twr-03: ping 100.127.50.103
+- [ ] → pon-01: ping 100.127.52.101
+- [ ] → pon-02: ping 100.127.52.102
+- [ ] → pon-03: ping 100.127.52.103
+- [ ] → pon-04: ping 100.127.52.104
+- [ ] → vxlan-test: ping 100.127.51.1
+
+### From twr-03 (100.127.50.103) to FISP endpoints
+
+- [ ] → pon-01: ping 100.127.52.101
+- [ ] → pon-02: ping 100.127.52.102
+- [ ] → pon-03: ping 100.127.52.103
+- [ ] → pon-04: ping 100.127.52.104
+
+### From pon-04 (100.127.52.104) to WISP endpoints
+
+- [ ] → twr-01: ping 100.127.50.101
+- [ ] → twr-02: ping 100.127.50.102
+- [ ] → twr-03: ping 100.127.50.103
+
+### From vxlan-test (100.127.51.1) across fabric
+
+- [ ] → core-01: ping 100.127.1.1
+- [ ] → core-02: ping 100.127.1.2
+- [ ] → twr-01: ping 100.127.50.101
+- [ ] → pon-01: ping 100.127.52.101
+- [ ] → edge-01: ping 100.127.0.11
+
+## 11. SSH Hop Test (End-to-End)
 
 - [ ] External → isp-01 → edge-01 → core-01 → agg-01 → twr-01 (full path SSH)
 - [ ] External → isp-01 → edge-01 → core-01 → agg-02 → pon-01 (full path SSH)
 - [ ] External → isp-01 → edge-02 → core-02 → agg-01 → twr-03 (alternate path)
 
-## 10. Redundancy / Failover
+## 12. Redundancy / Failover
 
 - [ ] Shut core-01 ↔ agg-01 link, verify traffic reroutes via core-02
 - [ ] Shut edge-01 ↔ core-01 link, verify edge-01 reaches core via core-02

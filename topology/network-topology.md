@@ -273,6 +273,11 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 
 > All devices configured with SSH access for remote management. Credentials stored in .env (gitignored).
 
+### CDP
+
+- **CDP enabled globally** on all devices at initial deployment
+- Used for neighbor validation and topology verification
+
 ### External Access (isp-01)
 
 - **isp-01** has an additional **external access interface** bridged to the CML host network
