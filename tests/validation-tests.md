@@ -1,5 +1,26 @@
 # ISP Network Deployment — Validation Tests
 
+## Test Logging
+
+All test results must be documented in `tests/logs/` with the following format:
+
+- **Filename:** `validation-YYYY-MM-DD-HHMMSS.log`
+- **Format:** Each test entry includes timestamp, device, command, result (PASS/FAIL), and output
+
+```
+[2026-03-23 14:05:12] DEVICE: core-01 | TEST: IS-IS adjacency | CMD: show isis neighbors
+STATUS: PASS
+OUTPUT:
+  System Id       Type Interface     IP Address      State Holdtime Circuit Id
+  core-02         L2   Gi0/0/0       100.126.1.42    UP    25       core-02.01
+---
+```
+
+- Logs are gitignored to keep the repo clean
+- A new log file is created for each validation run
+
+---
+
 ## 1. External Access
 
 - [ ] SSH to isp-01 via bridged external interface
