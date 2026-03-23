@@ -301,7 +301,7 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 
 | Parameter     | Value                          |
 |--------------|--------------------------------|
-| CML Instance | https://REDACTED         |
+| CML Instance | (see .env file)                |
 | Lab Name     | isp-network-deployment         |
 | Node Images  | Catalyst 8000v, IOSv              |
 
