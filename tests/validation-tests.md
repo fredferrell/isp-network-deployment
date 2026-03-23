@@ -28,13 +28,22 @@ OUTPUT:
 - [ ] From isp-01, SSH to edge-01
 - [ ] From isp-01, SSH to edge-02
 
-## 2. Device Reachability (from isp-01)
+## 2. Device Reachability — SSH from isp-01 to All Devices
 
-- [ ] Ping edge-01 (203.0.113.2)
-- [ ] Ping edge-02 (203.0.113.10)
-- [ ] SSH hop from edge-01 to core-01
-- [ ] SSH hop from edge-01 to core-02
-- [ ] Verify all 16 devices are reachable via SSH (hop through isp-01)
+- [ ] isp-01 → edge-01: `ssh cisco@100.127.0.11`
+- [ ] isp-01 → edge-02: `ssh cisco@100.127.0.12`
+- [ ] isp-01 → core-01: `ssh cisco@100.127.1.1`
+- [ ] isp-01 → core-02: `ssh cisco@100.127.1.2`
+- [ ] isp-01 → agg-01: `ssh cisco@100.127.1.21`
+- [ ] isp-01 → agg-02: `ssh cisco@100.127.1.22`
+- [ ] isp-01 → twr-01: `ssh cisco@100.127.50.101`
+- [ ] isp-01 → twr-02: `ssh cisco@100.127.50.102`
+- [ ] isp-01 → twr-03: `ssh cisco@100.127.50.103`
+- [ ] isp-01 → pon-01: `ssh cisco@100.127.52.101`
+- [ ] isp-01 → pon-02: `ssh cisco@100.127.52.102`
+- [ ] isp-01 → pon-03: `ssh cisco@100.127.52.103`
+- [ ] isp-01 → pon-04: `ssh cisco@100.127.52.104`
+- [ ] isp-01 → vxlan-test: `ssh cisco@100.127.51.1`
 
 ## 3. IS-IS Underlay
 
@@ -268,11 +277,11 @@ OUTPUT:
 - [ ] → pon-01: ping 100.127.52.101
 - [ ] → edge-01: ping 100.127.0.11
 
-## 11. SSH Hop Test (End-to-End)
+## 11. SSH Direct Access Verification
 
-- [ ] External → isp-01 → edge-01 → core-01 → agg-01 → twr-01 (full path SSH)
-- [ ] External → isp-01 → edge-01 → core-01 → agg-02 → pon-01 (full path SSH)
-- [ ] External → isp-01 → edge-02 → core-02 → agg-01 → twr-03 (alternate path)
+- [ ] From isp-01, SSH to the furthest WISP device (twr-03) directly — no hops
+- [ ] From isp-01, SSH to the furthest FISP device (pon-04) directly — no hops
+- [ ] From isp-01, SSH to vxlan-test directly — no hops
 
 ## 12. Redundancy / Failover
 

@@ -282,8 +282,8 @@ Addressing scheme based on [StubArea51 reference](https://stubarea51.net/2025/09
 
 - **isp-01** has an additional **external access interface** bridged to the CML host network
 - A **default route** on isp-01 points out this bridged interface, providing external reachability
-- SSH into **isp-01** first, then hop to all other devices behind it
-- isp-01 serves as the **jump host / bastion** for the entire lab
+- SSH from **isp-01** directly to every other device via loopback addresses
+- isp-01 serves as the **SSH gateway** for the entire lab (no multi-hop required)
 
 ---
 
